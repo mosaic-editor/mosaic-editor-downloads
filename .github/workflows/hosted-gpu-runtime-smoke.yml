@@ -1,0 +1,192 @@
+name: Hosted GPU Runtime Smoke
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/hosted-gpu-runtime-smoke.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: GitHub-hosted Windows GPU capability probe
+    runs-on: windows-latest
+    timeout-minutes: 25
+    env:
+      PYTHONUTF8: "1"
+      QT_QPA_PLATFORM: offscreen
+
+    steps:
+      - name: Checkout downloads repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Download published source snapshot
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $url = "https://github.com/tt840817/mosaic-editor-downloads/releases/download/v0.1.0/MosaicEditor-Source-v0.1.0.zip"
+          $zip = Join-Path $env:RUNNER_TEMP "MosaicEditor-Source-v0.1.0.zip"
+          $dst = Join-Path $env:RUNNER_TEMP "mosaic-source"
+          Invoke-WebRequest -Uri $url -OutFile $zip
+          Remove-Item $dst -Recurse -Force -ErrorAction SilentlyContinue
+          Expand-Archive -Path $zip -DestinationPath $dst -Force
+
+          $pyproject = Get-ChildItem $dst -Recurse -Filter pyproject.toml | Select-Object -First 1
+          if (-not $pyproject) { throw "Published source ZIP did not contain pyproject.toml" }
+          $root = $pyproject.Directory.FullName
+          "SOURCE_ROOT=$root" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+          Write-Host "Published source root: $root"
+
+      - name: Install published source AI environment
+        shell: pwsh
+        run: |
+          Set-Location $env:SOURCE_ROOT
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev,ai]" "onnx>=1.17,<2"
+
+      - name: Ensure FFmpeg and ffprobe
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $ffmpeg = Get-Command ffmpeg.exe -ErrorAction SilentlyContinue
+          $ffprobe = Get-Command ffprobe.exe -ErrorAction SilentlyContinue
+          if (-not $ffmpeg -or -not $ffprobe) {
+            $zip = Join-Path $env:RUNNER_TEMP "ffmpeg-release-essentials.zip"
+            $root = Join-Path $env:RUNNER_TEMP "ffmpeg-release-essentials"
+            Remove-Item $root -Recurse -Force -ErrorAction SilentlyContinue
+            Invoke-WebRequest -Uri "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip" -OutFile $zip
+            Expand-Archive -Path $zip -DestinationPath $root -Force
+            $exe = Get-ChildItem $root -Recurse -Filter ffmpeg.exe | Select-Object -First 1
+            if (-not $exe) { throw "Downloaded FFmpeg archive did not contain ffmpeg.exe" }
+            $bin = $exe.Directory.FullName
+            $bin | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+            $env:PATH = "$bin;$env:PATH"
+          }
+          ffmpeg -hide_banner -version
+          ffprobe -hide_banner -version
+
+      - name: Probe hosted GPU runtime
+        shell: pwsh
+        run: |
+          Set-Location $env:SOURCE_ROOT
+          New-Item -ItemType Directory -Force -Path acceptance-output/hosted-gpu | Out-Null
+
+          $nvidia = Get-Command nvidia-smi.exe -ErrorAction SilentlyContinue
+          if ($nvidia) {
+            & $nvidia.Source 2>&1 | Tee-Object -FilePath acceptance-output/hosted-gpu/nvidia-smi.txt
+          } else {
+            "nvidia-smi.exe not found" | Tee-Object -FilePath acceptance-output/hosted-gpu/nvidia-smi.txt
+          }
+
+          Get-CimInstance Win32_VideoController |
+            Select-Object Name, DriverVersion, AdapterRAM, VideoProcessor, Status |
+            Format-List |
+            Tee-Object -FilePath acceptance-output/hosted-gpu/video-controller.txt
+
+          @'
+          import json
+          import shutil
+          from pathlib import Path
+
+          import numpy as np
+          import onnx
+          from onnx import TensorProto, helper
+          import onnxruntime as ort
+          import torch
+
+          from mosaic_editor.cuda_compositor import CudaAlphaCompositor
+          from mosaic_editor.export import nvenc_capabilities
+
+          out = Path("acceptance-output/hosted-gpu")
+          out.mkdir(parents=True, exist_ok=True)
+
+          ffmpeg = shutil.which("ffmpeg") or shutil.which("ffmpeg.exe")
+          nvidia_smi = shutil.which("nvidia-smi") or shutil.which("nvidia-smi.exe")
+
+          report = {
+              "runner_kind": "github-hosted-windows-latest",
+              "torch_version": torch.__version__,
+              "torch_cuda_version": getattr(torch.version, "cuda", None),
+              "torch_cuda_available": bool(torch.cuda.is_available()),
+              "torch_device_count": int(torch.cuda.device_count()),
+              "ort_version": ort.__version__,
+              "ort_providers": list(ort.get_available_providers()),
+              "nvidia_smi_found": bool(nvidia_smi),
+              "ffmpeg_found": bool(ffmpeg),
+              "nvenc_capabilities": nvenc_capabilities(str(Path(ffmpeg).parent)) if ffmpeg else {},
+              "dml_inference": {"attempted": False},
+          }
+
+          if torch.cuda.is_available():
+              report["torch_device_name"] = torch.cuda.get_device_name(0)
+              x = torch.tensor([1.0, 2.0, 3.0], device="cuda")
+              report["torch_cuda_sum"] = float((x * 2).sum().cpu())
+
+          compositor = CudaAlphaCompositor.create_if_available()
+          report["cuda_compositor_available"] = compositor is not None
+
+          # If DirectML is exposed, verify that the provider can execute a tiny graph.
+          if "DmlExecutionProvider" in ort.get_available_providers():
+              report["dml_inference"]["attempted"] = True
+              try:
+                  xinfo = helper.make_tensor_value_info("x", TensorProto.FLOAT, [1, 4])
+                  yinfo = helper.make_tensor_value_info("y", TensorProto.FLOAT, [1, 4])
+                  node = helper.make_node("Relu", ["x"], ["y"])
+                  graph = helper.make_graph([node], "hosted-dml-probe", [xinfo], [yinfo])
+                  model = helper.make_model(graph, opset_imports=[helper.make_operatorsetid("", 13)])
+                  model.ir_version = 8
+                  model_path = out / "hosted-dml-probe.onnx"
+                  onnx.save(model, model_path)
+                  opts = ort.SessionOptions()
+                  opts.enable_mem_pattern = False
+                  opts.execution_mode = ort.ExecutionMode.ORT_SEQUENTIAL
+                  session = ort.InferenceSession(
+                      str(model_path),
+                      sess_options=opts,
+                      providers=["DmlExecutionProvider"],
+                  )
+                  sample = np.array([[-1.0, 2.0, -3.0, 4.0]], dtype=np.float32)
+                  actual = session.run(None, {"x": sample})[0]
+                  expected = np.array([[0.0, 2.0, 0.0, 4.0]], dtype=np.float32)
+                  report["dml_inference"] = {
+                      "attempted": True,
+                      "passed": bool(np.array_equal(actual, expected)),
+                      "providers": session.get_providers(),
+                  }
+              except Exception as exc:
+                  report["dml_inference"] = {
+                      "attempted": True,
+                      "passed": False,
+                      "error": f"{type(exc).__name__}: {exc}",
+                  }
+
+          text = json.dumps(report, ensure_ascii=False, indent=2)
+          print(text)
+          (out / "hosted-gpu-report.json").write_text(text, encoding="utf-8")
+          '@ | Set-Content -Path $env:RUNNER_TEMP\hosted-gpu-probe.py -Encoding utf8
+
+          python $env:RUNNER_TEMP\hosted-gpu-probe.py
+
+      - name: Run GPU-related regression tests from published source
+        shell: pwsh
+        run: |
+          Set-Location $env:SOURCE_ROOT
+          python -m pytest tests/test_cuda_compositor.py tests/test_ai_cuda_runtime.py -q --tb=short -p no:cacheprovider
+
+      - name: Upload probe evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hosted-gpu-runtime-smoke-${{ github.run_id }}
+          path: ${{ env.SOURCE_ROOT }}/acceptance-output/hosted-gpu
+          if-no-files-found: warn
+          retention-days: 7
