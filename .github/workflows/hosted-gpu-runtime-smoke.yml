@@ -2,11 +2,6 @@ name: Hosted GPU Runtime Smoke
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/hosted-gpu-runtime-smoke.yml"
 
 permissions:
   contents: read
@@ -157,10 +152,15 @@ jobs:
                   sample = np.array([[-1.0, 2.0, -3.0, 4.0]], dtype=np.float32)
                   actual = session.run(None, {"x": sample})[0]
                   expected = np.array([[0.0, 2.0, 0.0, 4.0]], dtype=np.float32)
+                  providers = session.get_providers()
                   report["dml_inference"] = {
                       "attempted": True,
-                      "passed": bool(np.array_equal(actual, expected)),
-                      "providers": session.get_providers(),
+                      "passed": bool(
+                          np.array_equal(actual, expected)
+                          and providers
+                          and providers[0] == "DmlExecutionProvider"
+                      ),
+                      "providers": providers,
                   }
               except Exception as exc:
                   report["dml_inference"] = {
