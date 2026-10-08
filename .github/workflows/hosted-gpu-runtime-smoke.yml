@@ -28,7 +28,7 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
-          $url = "https://github.com/tt840817/mosaic-editor-downloads/releases/download/v0.1.0/MosaicEditor-Source-v0.1.0.zip"
+          $url = "https://github.com/mosaic-editor/mosaic-editor-downloads/releases/download/v0.1.0/MosaicEditor-Source-v0.1.0.zip"
           $zip = Join-Path $env:RUNNER_TEMP "MosaicEditor-Source-v0.1.0.zip"
           $dst = Join-Path $env:RUNNER_TEMP "mosaic-source"
           Invoke-WebRequest -Uri $url -OutFile $zip

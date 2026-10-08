@@ -3,7 +3,7 @@
 Mosaic Editor is released under GNU AGPL-3.0-only with the owner's authorization.
 The complete release source snapshot, build scripts, configuration, tests and
 resources are provided as `MosaicEditor-Source-v0.1.0.zip` on the same release:
-https://github.com/tt840817/mosaic-editor-downloads/releases/tag/v0.1.0
+https://github.com/mosaic-editor/mosaic-editor-downloads/releases/tag/v0.1.0
 The private development repository and Git history are not required to obtain
 the released source. Source archives do not include personal projects or caches.
 

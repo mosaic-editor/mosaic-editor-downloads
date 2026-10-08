@@ -1,0 +1,125 @@
+{
+  "schema": 1,
+  "repository": "mosaic-editor/mosaic-editor-downloads",
+  "assets": [
+    {
+      "name": "MosaicEditor-Portable.zip",
+      "bytes": 112045998,
+      "sha256": "62616d42a5408be49c8a5f09c12c54a3313333082c760b62819939b923f6d7b1",
+      "url": "https://github.com/mosaic-editor/mosaic-editor-downloads/releases/download/v0.1.1/MosaicEditor-Portable.zip",
+      "source_tag": "v0.1.1"
+    },
+    {
+      "name": "MosaicEditor-Setup.exe",
+      "bytes": 97983502,
+      "sha256": "83e4cb22fba8fdc1a924840f345b415c89c35ebdca10a5abf28a1ac58aca4e85",
+      "url": "https://github.com/mosaic-editor/mosaic-editor-downloads/releases/download/v0.1.1/MosaicEditor-Setup.exe",
+      "source_tag": "v0.1.1"
+    },
+    {
+      "name": "MosaicEditor.exe",
+      "bytes": 111668027,
+      "sha256": "01603ab6bd12e42ee956b848f227d7cce8b9e36b85a472290ae8b44a4be0fc32",
+      "url": "https://github.com/mosaic-editor/mosaic-editor-downloads/releases/download/v0.1.1/MosaicEditor.exe",
+      "source_tag": "v0.1.1"
+    },
+    {
+      "name": "mosaic-runtime-face-cpu-1.24.4-r1.zip",
+      "bytes": 14118211,
+      "sha256": "be48ea72e8a7db9ba7fb229389c2fbe44bf41c4e071dff9f8bba2b792e11c451",
+      "url": "https://github.com/mosaic-editor/mosaic-editor-downloads/releases/download/runtime-v1-20261006/mosaic-runtime-face-cpu-1.24.4-r1.zip",
+      "source_tag": "runtime-v1-20261006"
+    },
+    {
+      "name": "mosaic-runtime-face-cuda-1.24.4-r1.zip",
+      "bytes": 215925544,
+      "sha256": "7e3619d2fde9312772174729b6de8f458056aff5dcd3267384a0d8b58de1451b",
+      "url": "https://github.com/mosaic-editor/mosaic-editor-downloads/releases/download/runtime-v1-20261006/mosaic-runtime-face-cuda-1.24.4-r1.zip",
+      "source_tag": "runtime-v1-20261006"
+    },
+    {
+      "name": "mosaic-runtime-face-dml-1.24.4-r1.zip",
+      "bytes": 27427704,
+      "sha256": "8a3044349f607425c5f114bc146110314b26a1b1311f1207bc37b754f074660b",
+      "url": "https://github.com/mosaic-editor/mosaic-editor-downloads/releases/download/runtime-v1-20261006/mosaic-runtime-face-dml-1.24.4-r1.zip",
+      "source_tag": "runtime-v1-20261006"
+    },
+    {
+      "name": "mosaic-runtime-face-model-20261006-r1.zip",
+      "bytes": 15766447,
+      "sha256": "ee6d569e610ad97ba8390c511b56a98222ebfc2b568589502e5e93aff86796fb",
+      "url": "https://github.com/mosaic-editor/mosaic-editor-downloads/releases/download/runtime-v1-20261006/mosaic-runtime-face-model-20261006-r1.zip",
+      "source_tag": "runtime-v1-20261006"
+    },
+    {
+      "name": "mosaic-runtime-face-parsing-model-20261006-r1.zip",
+      "bytes": 49599459,
+      "sha256": "bdb5f4858171825a73c6008be89c9ff5ac50cf0cc3c5d945ce76ce2492248eff",
+      "url": "https://github.com/mosaic-editor/mosaic-editor-downloads/releases/download/runtime-v1-20261006/mosaic-runtime-face-parsing-model-20261006-r1.zip",
+      "source_tag": "runtime-v1-20261006"
+    },
+    {
+      "name": "mosaic-runtime-ffmpeg-118351-a0a89efd07-r1.zip",
+      "bytes": 104366922,
+      "sha256": "bd8403c5ed3375e3d444f4848d5a1f1a0e74619eac0de7932ac65776a927d38f",
+      "url": "https://github.com/mosaic-editor/mosaic-editor-downloads/releases/download/runtime-v1-20261006/mosaic-runtime-ffmpeg-118351-a0a89efd07-r1.zip",
+      "source_tag": "runtime-v1-20261006"
+    },
+    {
+      "name": "mosaic-runtime-genital-ai-8.4.164-r1.zip",
+      "bytes": 84702780,
+      "sha256": "13588414830f53d338d3271b0a3d8028c4426265b9f192c3725d19b295aa6cb9",
+      "url": "https://github.com/mosaic-editor/mosaic-editor-downloads/releases/download/runtime-v1-20261006/mosaic-runtime-genital-ai-8.4.164-r1.zip",
+      "source_tag": "runtime-v1-20261006"
+    },
+    {
+      "name": "mosaic-runtime-genital-cpu-2.14.0-cpu-r1.zip",
+      "bytes": 146218287,
+      "sha256": "30a25c2798aee9e7bb8652fa40bbd61c149c210327ba5b90a2944da0717b22fd",
+      "url": "https://github.com/mosaic-editor/mosaic-editor-downloads/releases/download/runtime-v1-20261006/mosaic-runtime-genital-cpu-2.14.0-cpu-r1.zip",
+      "source_tag": "runtime-v1-20261006"
+    },
+    {
+      "name": "mosaic-runtime-genital-model-20261006-r1.zip",
+      "bytes": 10535191,
+      "sha256": "2deab84094d15fbc12d92cc95a61bcf731334f1ba3634acbbd16d7da82b204d5",
+      "url": "https://github.com/mosaic-editor/mosaic-editor-downloads/releases/download/runtime-v1-20261006/mosaic-runtime-genital-model-20261006-r1.zip",
+      "source_tag": "runtime-v1-20261006"
+    },
+    {
+      "name": "mosaic-runtime-nvidia-2.14.0-cu126-r1.zip.part001",
+      "bytes": 1000000000,
+      "sha256": "982aac2716ee09108fa0d6af958292e940831c83c1207ebd25b5de19d930daa9",
+      "url": "https://github.com/mosaic-editor/mosaic-editor-downloads/releases/download/runtime-v1-20261006/mosaic-runtime-nvidia-2.14.0-cu126-r1.zip.part001",
+      "source_tag": "runtime-v1-20261006"
+    },
+    {
+      "name": "mosaic-runtime-nvidia-2.14.0-cu126-r1.zip.part002",
+      "bytes": 1000000000,
+      "sha256": "3929a9f97f8590b999182a3576389e7a95781035a2d4900f7a9a97a13efa39e3",
+      "url": "https://github.com/mosaic-editor/mosaic-editor-downloads/releases/download/runtime-v1-20261006/mosaic-runtime-nvidia-2.14.0-cu126-r1.zip.part002",
+      "source_tag": "runtime-v1-20261006"
+    },
+    {
+      "name": "mosaic-runtime-nvidia-2.14.0-cu126-r1.zip.part003",
+      "bytes": 705660767,
+      "sha256": "35098f956f85b10250facc55f3dd189c843c96e9432cd38003260f6541969bd1",
+      "url": "https://github.com/mosaic-editor/mosaic-editor-downloads/releases/download/runtime-v1-20261006/mosaic-runtime-nvidia-2.14.0-cu126-r1.zip.part003",
+      "source_tag": "runtime-v1-20261006"
+    },
+    {
+      "name": "mosaic-runtime-runtime-common-20261006-r1.zip",
+      "bytes": 13080793,
+      "sha256": "38d2e0d3469af756593ab2d77c04168fc24eead794652e74abe092783d6323c1",
+      "url": "https://github.com/mosaic-editor/mosaic-editor-downloads/releases/download/runtime-v1-20261006/mosaic-runtime-runtime-common-20261006-r1.zip",
+      "source_tag": "runtime-v1-20261006"
+    }
+  ],
+  "catalog": {
+    "name": "runtime-catalog.json",
+    "bytes": 8059,
+    "sha256": "18ec8df186f7945a5b632f3ac7700954829f04300f63aceede7d6fafdd351359",
+    "url": "https://github.com/mosaic-editor/mosaic-editor-downloads/releases/download/runtime-v1-20261006/runtime-catalog.json",
+    "source_tag": "runtime-v1-20261006"
+  }
+}

@@ -17,7 +17,7 @@
 
 ## 下載
 
-正式下載：[最新版本](https://github.com/tt840817/mosaic-editor-downloads/releases/latest)
+正式下載：[最新版本](https://github.com/mosaic-editor/mosaic-editor-downloads/releases/latest)
 
 一般使用者建議下載：
 
@@ -54,7 +54,7 @@ NVIDIA 大型 Runtime Pack 只會在相容 GPU 上、且取得使用者同意後
 
 Runtime 檔案位於：
 
-[獨立 Runtime Release](https://github.com/tt840817/mosaic-editor-downloads/releases/tag/runtime-v1-20261006)
+[獨立 Runtime Release](https://github.com/mosaic-editor/mosaic-editor-downloads/releases/tag/runtime-v1-20261006)
 
 一般情況下不需要手動下載。
 

@@ -1,0 +1,46 @@
+name: Publisher Identity Smoke
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Isolated identity-smoke-YYYYMMDD-N tag
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publisher-identity-smoke
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: endsWith(github.actor, '[bot]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: '3.12'
+      - name: Verify pins and publish isolated draft using repository token
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          SMOKE_TAG: ${{ inputs.tag }}
+        run: >-
+          python release_tools/publisher.py
+          --directory "$RUNNER_TEMP/pinned-public-assets"
+          --tag "$SMOKE_TAG"
+      - name: Preserve identity evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: publisher-identity-${{ github.run_id }}
+          path: ${{ runner.temp }}/pinned-public-assets/identity-result.json
+          if-no-files-found: error
+          retention-days: 14
